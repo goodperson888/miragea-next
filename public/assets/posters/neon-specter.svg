@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07131c"/>
+      <stop offset=".42" stop-color="#1b1020"/>
+      <stop offset="1" stop-color="#05060b"/>
+    </linearGradient>
+    <radialGradient id="pink" cx=".72" cy=".28" r=".55">
+      <stop offset="0" stop-color="#ff5eb7" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#ff5eb7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cyan" cx=".2" cy=".38" r=".5">
+      <stop offset="0" stop-color="#04e8f4" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#04e8f4" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="900" height="1200" fill="url(#bg)"/>
+  <rect width="900" height="1200" fill="url(#pink)"/>
+  <rect width="900" height="1200" fill="url(#cyan)"/>
+  <g opacity=".45" stroke="#0de7f3" stroke-width="3">
+    <path d="M80 160h740M80 240h600M130 830h640M160 910h520"/>
+    <path d="M120 160v830M760 180v780M520 100v950" opacity=".25"/>
+  </g>
+  <g filter="url(#glow)">
+    <path d="M238 794c-52-112-40-278 42-374 75-88 207-89 275-6 76 92 83 262 24 378-42 83-110 125-185 124-70-2-124-43-156-122z" fill="#111923" stroke="#ff5eb7" stroke-width="8"/>
+    <path d="M305 414c45-116 197-137 282-39 46 53 54 121 42 189-54-48-119-72-195-72-66 0-115-25-129-78z" fill="#122b35" stroke="#0de7f3" stroke-width="7"/>
+    <circle cx="385" cy="560" r="26" fill="#0de7f3"/>
+    <circle cx="505" cy="560" r="22" fill="#ff5eb7"/>
+    <path d="M350 682c63 43 128 43 193 0" fill="none" stroke="#f7f3fb" stroke-width="10" stroke-linecap="round"/>
+    <path d="M233 546c-50 12-75 52-74 120M644 535c63 18 88 60 83 125" fill="none" stroke="#ff5eb7" stroke-width="10"/>
+  </g>
+  <g fill="none" stroke="#ff5eb7" stroke-width="6" opacity=".75">
+    <path d="M86 1072h212v42H86zM602 1048h212v42H602z"/>
+  </g>
+</svg>
