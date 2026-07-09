@@ -186,7 +186,7 @@ export function AppShell() {
         />
       )}
       {tab === "messages" && <MessagesView t={t} />}
-      {tab === "profile" && <ProfileView t={t} />}
+      {tab === "profile" && <ProfileView t={t} notify={notify} />}
 
       <button
         className="demo-cycle"

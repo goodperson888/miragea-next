@@ -9,10 +9,10 @@
 - 钱包：MetaMask
 - 网络：Base Sepolia
 - Gas 测试币：Base Sepolia ETH
-- 产品展示资产：HTX / USDT
-- 测试网实现资产：Mock HTX-E / Mock USDT
+- 产品展示资产：HTX / USDT / IP 币
+- 测试网实现资产：Mock HTX-E / Mock USDT / Mock IP Coin
 
-说明：目前不建议依赖“HTX 官方测试币水龙头”。公开资料里没有稳定、通用、适合比赛现场使用的 HTX 测试币 faucet。比赛阶段更稳的做法是用 Base Sepolia ETH 作为链上 gas，用自部署 Mock ERC20 表示产品中的 `HTX` 资产。
+说明：目前不建议依赖“HTX 官方测试币水龙头”。公开资料里没有稳定、通用、适合比赛现场使用的 HTX 测试币 faucet。比赛阶段更稳的做法是用 Base Sepolia ETH 作为链上 gas，用自部署 Mock ERC20 表示产品中的 `HTX`、`USDT` 和剧集 `IP 币` 资产。
 
 ## 2. 添加 Base Sepolia
 
@@ -57,7 +57,17 @@ Decimals: 18
 Network: Base Sepolia
 ```
 
-产品 UI 中的 `HTX-E`、`USDT`、剧情预测代币都应标记为 Demo / Testnet Simulation。
+产品 UI 中的 `HTX-E`、`USDT`、剧情预测代币、剧集 `IP 币` 都应标记为 Demo / Testnet Simulation。
+
+市场和支付界面可以按生产版展示多种支付方式：
+
+- 法币
+- U / USDT
+- HTX
+- IP 币
+- Web3 钱包
+
+但比赛版不执行真实法币支付、真实充值提现或真实交易撮合。
 
 后续可加一个简单合约：
 
@@ -86,7 +96,7 @@ contract MockHTXE {
 路演时建议这样说：
 
 ```text
-当前版本运行在测试网模拟盘模式。钱包用于证明 Web3 账户身份，Base Sepolia ETH 只用于测试网 gas。HTX-E、USDT 和预测代币均为 Demo Token，没有现金价值，也不会进行真实充值、提现或交易。
+当前版本运行在测试网模拟盘模式。钱包用于证明 Web3 账户身份，Base Sepolia ETH 只用于测试网 gas。HTX-E、USDT、预测代币和剧集 IP 币均为 Demo Token，没有现金价值，也不会进行真实充值、提现或交易。
 ```
 
 ## 6. 后续接真实资产前必须补齐

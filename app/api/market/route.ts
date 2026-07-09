@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
-import { demoPhases, dramas, ecosystemStack, marketMechanics } from "@/lib/data";
+import { demoPhases, dramas, ecosystemStack, ipLaunchRules, marketMechanics, paymentMethods, tradeTicks } from "@/lib/data";
 
 export function GET() {
   return NextResponse.json({
     mode: "testnet-simulation",
     mechanics: marketMechanics,
     ecosystemStack,
+    paymentMethods,
+    ipLaunchRules,
     assets: {
       totalPredictionAssets: 42850.25,
       usdtBalance: 12400,
-      htxBalance: 325120.5
+      htxBalance: 325120.5,
+      ipCoinBalance: 18420
     },
     activeMarkets: dramas.map((drama, index) => ({
       id: `DRAMA8-${index === 0 ? "A" : "B"}`,
@@ -23,6 +26,8 @@ export function GET() {
       takeRate: marketMechanics.takeRate,
       lifecycle: marketMechanics.lifecycle,
       settlement: marketMechanics.settlement,
+      ipCoin: drama.ipCoin,
+      latestTrades: tradeTicks,
       phase: demoPhases[0]
     })),
     generatedAt: new Date().toISOString()

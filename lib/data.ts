@@ -22,7 +22,30 @@ export const dramas = [
     poster: posters.wolf,
     options: ["复仇", "和解", "逃亡"],
     market: "+14.2%",
-    price: "$0.654"
+    price: "$0.654",
+    ipCoin: {
+      symbol: "ALLEY",
+      name: "Alley Protocol IP",
+      price: "$0.654",
+      change24h: "+14.2%",
+      marketCap: "$6.54M",
+      fdv: "$18.2M",
+      volume24h: "$842K",
+      holders: "12,408",
+      liquidity: "$1.28M",
+      flow24h: "+$216K",
+      supply: "10.0M / 28.0M",
+      launchType: "Whitelist + Public Mint",
+      unlock: "20% TGE, 6-month creator lock",
+      valuationRange: "$0.58 - $0.72",
+      heatScore: 92,
+      storyScore: 88,
+      riskScore: 32,
+      baiSummary: {
+        zh: "B.AI 识别到预告片复看率高、复仇线讨论集中、加权投票持续上升。由于流动性仍处早期，建议发行估值保持在温和区间。",
+        en: "B.AI detects high trailer replay, strong revenge-arc discussion, and rising weighted votes. Suggested launch range stays moderate because liquidity is still early."
+      }
+    }
   },
   {
     id: "drama8b",
@@ -34,7 +57,30 @@ export const dramas = [
     poster: posters.vault,
     options: ["坦白", "追查", "隐瞒"],
     market: "-8.5%",
-    price: "$0.346"
+    price: "$0.346",
+    ipCoin: {
+      symbol: "RAIN",
+      name: "Rain Archive IP",
+      price: "$0.346",
+      change24h: "-8.5%",
+      marketCap: "$3.46M",
+      fdv: "$9.8M",
+      volume24h: "$396K",
+      holders: "7,210",
+      liquidity: "$740K",
+      flow24h: "-$58K",
+      supply: "10.0M / 28.4M",
+      launchType: "Community Airdrop + LP",
+      unlock: "15% TGE, 9-month creator lock",
+      valuationRange: "$0.31 - $0.39",
+      heatScore: 76,
+      storyScore: 81,
+      riskScore: 48,
+      baiSummary: {
+        zh: "B.AI 看到完播率和悬疑线留存稳定，但短期交易资金流降温。估值区间建议贴近当前价格。",
+        en: "B.AI sees stable completion rate and mystery-arc retention, but short-term trade flow is cooling. Valuation range is held near current price."
+      }
+    }
   }
 ];
 
@@ -86,8 +132,30 @@ export const marketMechanics = {
   evolution: "LMSR + CLOB",
   takeRate: "2%",
   settlement: "vote_snapshot",
-  payments: ["USDT", "HTX", "Credit Card", "PayPal", "Web3 Wallet"]
+  payments: ["Fiat", "USDT", "HTX", "IP Coin", "Web3 Wallet"]
 } as const;
+
+export const paymentMethods = [
+  { id: "fiat", label: "Fiat", detail: "Card / PayPal", icon: "$" },
+  { id: "u", label: "U", detail: "USDT balance", icon: "U" },
+  { id: "htx", label: "HTX", detail: "HTX Pay", icon: "H" },
+  { id: "ip", label: "IP Coin", detail: "Drama coin", icon: "IP" }
+] as const;
+
+export const ipLaunchRules = [
+  ["Issuer", "Creator + MIRAGEA"],
+  ["Supply", "28M fixed"],
+  ["Initial Sale", "Whitelist / Public Mint"],
+  ["Utility", "Vote boost, early access, extras"],
+  ["Risk Control", "Lockup, cooldown, abnormal trade monitor"]
+] as const;
+
+export const tradeTicks = [
+  ["BUY", "0.654", "12,800", "HTX", "12:18"],
+  ["BUY", "0.651", "8,420", "USDT", "12:16"],
+  ["SELL", "0.649", "3,100", "ALLEY", "12:11"],
+  ["BUY", "0.646", "5,760", "HTX", "12:07"]
+] as const;
 
 export const ecosystemStack = [
   {
@@ -105,7 +173,7 @@ export const ecosystemStack = [
   {
     id: "b-ai",
     name: "B.AI Compute",
-    role: "Episode generation, branch previews, cover assets, moderation assists",
+    role: "Episode generation, branch previews, cover assets, IP valuation signals",
     status: "AI pipeline"
   }
 ] as const;
@@ -113,7 +181,7 @@ export const ecosystemStack = [
 export const titles: Record<TabKey, string> = {
   theater: "发现",
   store: "剧场",
-  market: "预测市场",
+  market: "市场",
   messages: "消息",
   profile: "NEO_DRAMA"
 };
@@ -121,7 +189,7 @@ export const titles: Record<TabKey, string> = {
 export const navCopy: Record<TabKey, [string, string]> = {
   theater: ["▥", "发现"],
   store: ["▣", "剧场"],
-  market: ["▧", "预测市场"],
+  market: ["▧", "市场"],
   messages: ["▱", "Vault"],
   profile: ["◉", "Profile"]
 };
