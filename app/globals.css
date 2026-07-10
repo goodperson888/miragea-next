@@ -449,28 +449,28 @@ h1 {
 }
 
 .episode-switcher {
-  position: absolute;
-  right: 14px;
-  top: 62px;
+  position: relative;
   z-index: 6;
-  display: grid;
+  display: inline-flex;
   gap: 8px;
+  align-items: center;
   justify-items: center;
-  padding: 8px;
-  border: 1px solid rgba(255, 122, 199, 0.24);
+  width: fit-content;
+  padding: 5px 7px;
+  border: 1px solid rgba(13, 231, 243, 0.28);
   border-radius: 999px;
-  background: rgba(9, 9, 15, 0.62);
+  background: rgba(9, 9, 15, 0.52);
   backdrop-filter: blur(12px);
 }
 
 .episode-switcher button {
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 122, 199, 0.18);
-  color: var(--pink);
+  background: rgba(13, 231, 243, 0.12);
+  color: var(--cyan);
   font-weight: 950;
 }
 
@@ -804,29 +804,21 @@ h1 {
 
 .finished-episode .side-actions {
   right: 14px;
-  top: 154px;
+  top: 268px;
   z-index: 8;
-  gap: 12px;
-  color: rgba(255, 236, 246, 0.72);
+  gap: 14px;
+  color: rgba(255, 236, 246, 0.9);
 }
 
 .finished-episode .round-action {
-  width: 40px;
-  min-height: 54px;
+  width: 42px;
+  min-height: 56px;
   border-radius: 999px;
-  background: rgba(9, 9, 15, 0.46);
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.62);
-  backdrop-filter: blur(10px);
-}
-
-.finished-episode .episode-switcher {
-  right: 14px;
-  top: 62px;
 }
 
 .finished-watch-overlay .mixed-switcher {
-  top: -168px;
-  right: -52px;
+  margin-top: -2px;
 }
 
 .finished-episode .vote-terminal {
@@ -1525,16 +1517,17 @@ h1 {
   z-index: 4;
   display: grid;
   gap: 15px;
-  color: rgba(255, 236, 246, 0.24);
+  color: rgba(255, 236, 246, 0.86);
 }
 
 .round-action {
   display: grid;
-  width: 36px;
-  min-height: 50px;
+  width: 42px;
+  min-height: 54px;
   place-items: center;
   background: transparent;
-  font-size: 26px;
+  color: inherit;
+  font-size: 28px;
   line-height: 1;
   transition: color 160ms ease, transform 160ms ease, text-shadow 160ms ease;
 }
