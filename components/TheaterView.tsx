@@ -531,6 +531,7 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
     if (detailDramaIndex === null) return null;
     const drama = dramas[detailDramaIndex] ?? dramas[0];
     const coin = drama.ipCoin;
+    const localeKey = t.langLabel === "EN" ? "zh" : "en";
     const chartByRange: Record<string, string> = {
       "1H": "8,72 28,64 48,68 68,48 88,55 108,36 128,43 148,28 168,32 188,20 208,26 228,16",
       "4H": "8,58 28,62 48,52 68,44 88,50 108,34 128,38 148,30 168,24 188,27 208,19 228,22",
@@ -595,6 +596,15 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
                 <span>{t.market.liquidity}<b>{coin.liquidity}</b></span>
                 <span>{t.market.netFlow}<b className={coin.flow24h.startsWith("-") ? "down" : "up"}>{coin.flow24h}</b></span>
               </div>
+
+              <section className="bai-valuation detail-bai-valuation">
+                <div>
+                  <span className="panel-kicker">{t.market.baiValuation}</span>
+                  <strong>{coin.valuationRange}</strong>
+                </div>
+                <span className="valuation-time">{t.market.valuationTime}: {coin.valuationUpdatedAt}</span>
+                <p>{coin.baiSummary[localeKey]}</p>
+              </section>
 
               <div className="detail-trade-actions">
                 <button className={detailTradeSide === "buy" ? "pink-btn active" : "pink-btn"} type="button" onClick={() => setDetailTradeSide("buy")}>

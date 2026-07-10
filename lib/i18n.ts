@@ -188,6 +188,7 @@ export const dictionaries = {
       storyPotential: "剧情潜力",
       risk: "风险",
       valuationRange: "估值区间",
+      valuationTime: "估值时间",
       ipCoinDetail: "IP 币详情",
       priceTrend: "价格走势",
       tradingData: "交易数据",
@@ -267,6 +268,7 @@ export const dictionaries = {
       universal: "通用资产",
       prediction: "预测资产",
       ipAsset: "IP 币资产",
+      ipAssetNote: "ALLEY / RAIN 折算",
       creatorStudio: "创作者工具",
       creatorSubtitle: "用 B.AI 生成分支、预告和 IP 币估值",
       createDrama: "生成分支",
@@ -292,7 +294,7 @@ export const dictionaries = {
         ["贡献榜单", "Contribution"]
       ],
       settingRows: [
-        ["⌁", "绑定 HTX 账户", "已绑定"],
+        ["⌁", "绑定钱包", "已绑定"],
         ["⌾", "身份认证 (KYC)", "›"],
         ["♧", "推送设置", "toggle"],
         ["?", "帮助中心", "›"],
@@ -488,6 +490,7 @@ export const dictionaries = {
       storyPotential: "Story Potential",
       risk: "Risk",
       valuationRange: "Valuation Range",
+      valuationTime: "Valuation Time",
       ipCoinDetail: "IP Coin Detail",
       priceTrend: "Price Trend",
       tradingData: "Trading Data",
@@ -567,6 +570,7 @@ export const dictionaries = {
       universal: "UNIVERSAL",
       prediction: "PREDICTION",
       ipAsset: "IP COINS",
+      ipAssetNote: "ALLEY / RAIN converted",
       creatorStudio: "Creator Studio",
       creatorSubtitle: "Generate branches, trailers, and IP coin valuation with B.AI",
       createDrama: "Generate Branches",
@@ -592,7 +596,7 @@ export const dictionaries = {
         ["Contribution", "Leaderboard"]
       ],
       settingRows: [
-        ["⌁", "HTX Account Bind", "LINKED"],
+        ["⌁", "Wallet Bind", "LINKED"],
         ["⌾", "Identity (KYC)", "›"],
         ["♧", "Push Notification", "toggle"],
         ["?", "Help & Support", "›"],

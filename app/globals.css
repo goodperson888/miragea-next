@@ -3174,6 +3174,12 @@ h1 {
   font-size: 16px;
 }
 
+.valuation-time {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+}
+
 .valuation-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

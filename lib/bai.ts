@@ -7,6 +7,7 @@ export type BaiValuationResult = {
   storyScore: number;
   riskScore: number;
   valuationRange: string;
+  generatedAt: string;
   summary: {
     zh: string;
     en: string;
@@ -47,6 +48,7 @@ function mockValuation(dramaId: string): BaiValuationResult {
     storyScore: drama.ipCoin.storyScore,
     riskScore: drama.ipCoin.riskScore,
     valuationRange: drama.ipCoin.valuationRange,
+    generatedAt: new Date().toISOString(),
     summary: drama.ipCoin.baiSummary,
     branchOptions: drama.options.map((option) => `${option}线：延展角色冲突并制造下一集钩子`)
   };
@@ -137,6 +139,7 @@ export async function generateBaiValuation(dramaId: string, locale: "zh" | "en" 
       storyScore: clampScore(parsed.storyScore, drama.ipCoin.storyScore),
       riskScore: clampScore(parsed.riskScore, drama.ipCoin.riskScore),
       valuationRange: typeof parsed.valuationRange === "string" ? parsed.valuationRange : drama.ipCoin.valuationRange,
+      generatedAt: new Date().toISOString(),
       summary: {
         zh: typeof parsed.summaryZh === "string" ? parsed.summaryZh : drama.ipCoin.baiSummary.zh,
         en: typeof parsed.summaryEn === "string" ? parsed.summaryEn : drama.ipCoin.baiSummary.en

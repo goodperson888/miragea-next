@@ -13,6 +13,19 @@ export function ProfileView({ t, notify }: { t: Dictionary; notify: (message: st
   const [isGenerating, setIsGenerating] = useState(false);
   const [pushEnabled, setPushEnabled] = useState(true);
 
+  function formatValuationTime(value?: string) {
+    const isZh = t.langLabel === "EN";
+    const time = value ? new Date(value) : new Date();
+    const safeTime = Number.isNaN(time.getTime()) ? new Date() : time;
+    return safeTime.toLocaleString(isZh ? "zh-CN" : "en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  }
+
   async function runCreatorAction(kind: "bai" | "ip") {
     const isZh = t.langLabel === "EN";
     if (kind === "bai") {
@@ -25,13 +38,15 @@ export function ProfileView({ t, notify }: { t: Dictionary; notify: (message: st
         });
         if (!response.ok) throw new Error("B.AI generation failed");
         const result = await response.json() as BaiValuationResult;
+        const generatedAt = formatValuationTime(result.generatedAt);
         setCreatorBranches(result.branchOptions);
         setCreatorStatus(isZh
-          ? [`${result.branchOptions.length} 个生成分支`, `估值 ${result.valuationRange}`, `${result.provider.toUpperCase()} ${result.model}`]
-          : [`${result.branchOptions.length} new branches`, `Valuation ${result.valuationRange}`, `${result.provider.toUpperCase()} ${result.model}`]);
+          ? [`${result.branchOptions.length} 个生成分支`, `估值 ${result.valuationRange}`, `${t.market.valuationTime} ${generatedAt}`, `${result.provider.toUpperCase()} ${result.model}`]
+          : [`${result.branchOptions.length} new branches`, `Valuation ${result.valuationRange}`, `${t.market.valuationTime} ${generatedAt}`, `${result.provider.toUpperCase()} ${result.model}`]);
         notify(t.profile.creatorQueued);
       } catch {
-        setCreatorStatus(isZh ? ["4 个草稿", "14 个分支", "B.AI 结果 3"] : ["4 drafts", "14 branches", "B.AI results 3"]);
+        const generatedAt = formatValuationTime();
+        setCreatorStatus(isZh ? ["4 个草稿", "14 个分支", `${t.market.valuationTime} ${generatedAt}`, "B.AI 结果 3"] : ["4 drafts", "14 branches", `${t.market.valuationTime} ${generatedAt}`, "B.AI results 3"]);
         notify(t.profile.creatorQueued);
       } finally {
         setIsGenerating(false);
@@ -55,14 +70,14 @@ export function ProfileView({ t, notify }: { t: Dictionary; notify: (message: st
       </section>
       <section className="panel asset-board">
         <div className="asset-label">{t.profile.assetTitle}</div>
-        <div className="asset-value"><strong style={{ color: "var(--pink)" }}>14,320.75</strong><span>$HTX</span></div>
+        <div className="asset-value"><strong style={{ color: "var(--pink)" }}>16,504.95</strong><span>HTX</span></div>
         <div className="asset-grid">
           <div className="asset-mini"><p>{t.profile.universal}</p><strong>10,420.00 HTX</strong></div>
-          <div className="asset-mini"><p>{t.profile.prediction}</p><strong style={{ color: "var(--cyan)" }}>3,900.75 USDT</strong></div>
+          <div className="asset-mini"><p>{t.profile.prediction}</p><strong style={{ color: "var(--cyan)" }}>3,900.75 HTX</strong></div>
           <div className="asset-mini ip-asset-mini">
             <p>{t.profile.ipAsset}</p>
-            <strong>18,420 ALLEY</strong>
-            <small>7,210 RAIN</small>
+            <strong>2,184.20 HTX</strong>
+            <small>{t.profile.ipAssetNote}</small>
           </div>
         </div>
       </section>

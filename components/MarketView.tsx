@@ -135,7 +135,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
         <div className="coin-price-row">
           <strong>{coin.price}</strong>
           <span className={coin.change24h.startsWith("-") ? "down" : "up"}>{coin.change24h}</span>
-          <small>{t.market.valuationRange}: {coin.valuationRange}</small>
+          <small>{t.market.valuationRange}: {coin.valuationRange} · {t.market.valuationTime}: {coin.valuationUpdatedAt}</small>
         </div>
 
         {renderCoinSparkline()}
@@ -154,6 +154,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
             <span className="panel-kicker">{t.market.baiValuation}</span>
             <strong>{coin.valuationRange}</strong>
           </div>
+          <span className="valuation-time">{t.market.valuationTime}: {coin.valuationUpdatedAt}</span>
           <div className="valuation-grid">
             {renderValuationScore(t.market.heat, heatScore)}
             {renderValuationScore(t.market.storyPotential, storyScore)}
@@ -226,8 +227,8 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
             <span>{market.ipCoin.symbol} 买入 · 12,800 HTX</span>
           </article>
           <article>
-            <strong>11:58</strong>
-            <span>B.AI 估值 · {market.ipCoin.valuationRange}</span>
+            <strong>{market.ipCoin.valuationUpdatedAt.slice(11, 16)}</strong>
+            <span>B.AI 估值 · {market.ipCoin.valuationRange} · {market.ipCoin.valuationUpdatedAt}</span>
           </article>
         </section>
       );
@@ -511,7 +512,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
                   <div>
                     <strong>{drama.ipCoin.symbol}</strong>
                     <span>{drama.title}</span>
-                    <small>{t.market.valuationRange}: {drama.ipCoin.valuationRange}</small>
+                    <small>{t.market.valuationRange}: {drama.ipCoin.valuationRange} · {t.market.valuationTime}: {drama.ipCoin.valuationUpdatedAt}</small>
                   </div>
                   <div className="ip-price-cell">
                     <strong>{drama.ipCoin.price}</strong>
