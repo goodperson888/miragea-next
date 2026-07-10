@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { posters, type ContentType, type DemoPhase, type Drama } from "@/lib/data";
+import { posters, tradeTicks, type ContentType, type DemoPhase, type Drama } from "@/lib/data";
 import type { Dictionary } from "@/lib/i18n";
 
 type Props = {
@@ -21,6 +21,10 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
   const [sealedVote, setSealedVote] = useState("");
   const [buyOption, setBuyOption] = useState("");
   const [voteTradeAmount, setVoteTradeAmount] = useState("");
+  const [detailDramaIndex, setDetailDramaIndex] = useState<number | null>(null);
+  const [detailTradeSide, setDetailTradeSide] = useState<"buy" | "sell" | "">("");
+  const [detailTradeAmount, setDetailTradeAmount] = useState("");
+  const [detailRange, setDetailRange] = useState("1H");
   const [activeIndex, setActiveIndex] = useState(0);
   const [finishedEpisodeIndex, setFinishedEpisodeIndex] = useState(0);
   const [unlockedEpisodes, setUnlockedEpisodes] = useState(() => new Set([7, 8, 9]));
@@ -113,6 +117,9 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
     setSealedVote("");
     setBuyOption("");
     setVoteTradeAmount("");
+    setDetailDramaIndex(null);
+    setDetailTradeSide("");
+    setDetailTradeAmount("");
     setIsVotePanelOpen(false);
     setIsVoteAccessOpen(false);
     setEpisodeProgress(0);
@@ -234,6 +241,31 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
   function closeBuyDrawer() {
     setBuyOption("");
     setVoteTradeAmount("");
+  }
+
+  function dramaIndexForEpisode(item: (typeof feedItems)[number]) {
+    if (item.id.includes("rain")) return Math.min(1, dramas.length - 1);
+    return 0;
+  }
+
+  function openDramaDetail(index: number) {
+    setDetailDramaIndex(index);
+    setDetailTradeSide("");
+    setDetailTradeAmount("");
+    setIsVotePanelOpen(false);
+  }
+
+  function closeDramaDetail() {
+    setDetailDramaIndex(null);
+    setDetailTradeSide("");
+    setDetailTradeAmount("");
+  }
+
+  function confirmDetailTrade(drama: Drama) {
+    const side = detailTradeSide === "sell" ? t.theater.sell : t.theater.buy;
+    notify(`${drama.ipCoin.symbol} ${side} · ${t.toast.trade}`);
+    setDetailTradeSide("");
+    setDetailTradeAmount("");
   }
 
   function toggleLike(id: string, forceLike = false) {
@@ -476,6 +508,114 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
     );
   }
 
+  function renderDramaDetailDrawer() {
+    if (detailDramaIndex === null) return null;
+    const drama = dramas[detailDramaIndex] ?? dramas[0];
+    const coin = drama.ipCoin;
+    const chartByRange: Record<string, string> = {
+      "1H": "8,72 28,64 48,68 68,48 88,55 108,36 128,43 148,28 168,32 188,20 208,26 228,16",
+      "4H": "8,58 28,62 48,52 68,44 88,50 108,34 128,38 148,30 168,24 188,27 208,19 228,22",
+      "1D": "8,78 28,70 48,74 68,66 88,58 108,62 128,44 148,52 168,40 188,35 208,42 228,28"
+    };
+
+    return (
+      <>
+        <button className="drama-detail-backdrop" type="button" aria-label={t.closeSheet} onClick={closeDramaDetail} />
+        <section className="drama-detail-drawer" aria-label={t.theater.dramaDetail}>
+          <button className="sheet-close mini-close" type="button" onClick={closeDramaDetail} aria-label={t.closeSheet}>
+            ×
+          </button>
+          <div className="drama-detail-hero">
+            <div className="detail-poster mini" style={{ "--poster": `url(${drama.poster})` } as React.CSSProperties} />
+            <div>
+              <span className="panel-kicker">{t.theater.dramaDetail}</span>
+              <h2>{drama.title}</h2>
+              <p>{coin.name}</p>
+            </div>
+          </div>
+
+          <div className="detail-coin-header">
+            <div>
+              <strong>{coin.symbol}</strong>
+              <span>{t.market.dramaCoin}</span>
+            </div>
+            <div>
+              <b>{coin.price}</b>
+              <em className={coin.change24h.startsWith("-") ? "down" : "up"}>{coin.change24h}</em>
+            </div>
+          </div>
+
+          <div className="detail-range-tabs" aria-label={t.market.priceTrend}>
+            {["1H", "4H", "1D"].map((range) => (
+              <button className={detailRange === range ? "active" : ""} type="button" key={range} onClick={() => setDetailRange(range)}>
+                {range}
+              </button>
+            ))}
+          </div>
+          <svg className="detail-coin-chart" viewBox="0 0 236 96" role="img" aria-label={t.market.priceTrend}>
+            <path className="grid-line" d="M8 24H228" />
+            <path className="grid-line" d="M8 52H228" />
+            <path className="grid-line" d="M8 80H228" />
+            <polyline fill="none" points={chartByRange[detailRange]} stroke="#39ff55" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
+          </svg>
+
+          <div className="detail-coin-stats">
+            <span>{t.market.volume}<b>{coin.volume24h}</b></span>
+            <span>{t.market.marketCap}<b>{coin.marketCap}</b></span>
+            <span>{t.market.liquidity}<b>{coin.liquidity}</b></span>
+            <span>{t.market.netFlow}<b className={coin.flow24h.startsWith("-") ? "down" : "up"}>{coin.flow24h}</b></span>
+          </div>
+
+          <div className="detail-trade-actions">
+            <button className={detailTradeSide === "buy" ? "pink-btn active" : "pink-btn"} type="button" onClick={() => setDetailTradeSide("buy")}>
+              {t.theater.buy}
+            </button>
+            <button className={detailTradeSide === "sell" ? "outline-btn active" : "outline-btn"} type="button" onClick={() => setDetailTradeSide("sell")}>
+              {t.theater.sell}
+            </button>
+          </div>
+
+          {detailTradeSide ? (
+            <div className="detail-trade-box">
+              <label>
+                {detailTradeSide === "sell" ? t.theater.sell : t.theater.buy} {coin.symbol}
+                <input
+                  inputMode="decimal"
+                  placeholder={detailTradeSide === "sell" ? `100 ${coin.symbol}` : "20 USDT"}
+                  value={detailTradeAmount}
+                  onChange={(event) => setDetailTradeAmount(event.target.value)}
+                />
+              </label>
+              <div className="amount-shortcuts" aria-label={t.theater.buyAmount}>
+                {["1", "5", "10", "100"].map((amount) => (
+                  <button type="button" key={amount} onClick={() => setDetailTradeAmount(amount)}>+{amount}</button>
+                ))}
+              </div>
+              <button className="pink-btn" type="button" onClick={() => confirmDetailTrade(drama)}>
+                {t.theater.trade}
+              </button>
+            </div>
+          ) : null}
+
+          <section className="detail-trade-tape">
+            <div className="market-chart-head">
+              <strong>{t.market.latestTrades}</strong>
+              <span>{t.market.smartMoney}</span>
+            </div>
+            {tradeTicks.map((tick) => (
+              <article key={`${tick[0]}-${tick[1]}-${tick[4]}`}>
+                <b className={tick[0] === "SELL" ? "down" : "up"}>{tick[0]}</b>
+                <span>{tick[1]}</span>
+                <span>{tick[2]}</span>
+                <small>{tick[3]} · {tick[4]}</small>
+              </article>
+            ))}
+          </section>
+        </section>
+      </>
+    );
+  }
+
   return (
     <main className="view theater-view">
       <section className="video-feed scroll-feed" ref={feedRef} onScroll={handleFeedScroll}>
@@ -560,19 +700,26 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
                     <div className="status-pill inline">
                       <i /> {t.theater.growthBadge}
                     </div>
-                    <h2>{episode.title}</h2>
+                    <button className="drama-title-trigger" type="button" onClick={() => openDramaDetail(dramaIndexForEpisode(episode))}>
+                      <h2>{episode.title}</h2>
+                    </button>
                     <p>{episode.desc}</p>
                   </div>
-                  <button
-                    className="pink-btn watch-vote-btn"
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setIsVotePanelOpen(true);
-                    }}
-                  >
-                    {t.theater.openVotePanel}
-                  </button>
+                  <div className="watch-action-row">
+                    <button
+                      className="pink-btn watch-vote-btn"
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setIsVotePanelOpen(true);
+                      }}
+                    >
+                      {t.theater.openVotePanel}
+                    </button>
+                    <button className="outline-btn watch-market-btn" type="button" onClick={() => openDramaDetail(dramaIndexForEpisode(episode))}>
+                      {t.theater.openIpMarket}
+                    </button>
+                  </div>
                 </div>
               ) : null}
 
@@ -583,7 +730,9 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
                       <div className="status-pill inline pay">
                         <i /> {t.theater.finishedBadge}
                       </div>
-                      <h2>{episode.title}</h2>
+                      <button className="drama-title-trigger" type="button" onClick={() => openDramaDetail(dramaIndexForEpisode(episode))}>
+                        <h2>{episode.title}</h2>
+                      </button>
                       <p>{episode.desc}</p>
                     </div>
                     <button
@@ -636,6 +785,7 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
           );
         })}
       </section>
+      {renderDramaDetailDrawer()}
     </main>
   );
 }
