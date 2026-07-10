@@ -9,15 +9,18 @@ type Props = {
   setContentType: (value: ContentType) => void;
   notify: (message: string) => void;
   openComments: () => void;
+  goMarket: () => void;
   commentsCount: number;
   dramas: Drama[];
   t: Dictionary;
   demoPhase: DemoPhase;
 };
 
-export function TheaterView({ notify, openComments, t, demoPhase, commentsCount }: Props) {
+export function TheaterView({ notify, openComments, goMarket, t, demoPhase, commentsCount, dramas }: Props) {
   const [selectedOption, setSelectedOption] = useState("");
+  const [sealedVote, setSealedVote] = useState("");
   const [buyOption, setBuyOption] = useState("");
+  const [voteTradeAmount, setVoteTradeAmount] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [finishedEpisodeIndex, setFinishedEpisodeIndex] = useState(0);
   const [unlockedEpisodes, setUnlockedEpisodes] = useState(() => new Set([7, 8, 9]));
@@ -107,7 +110,9 @@ export function TheaterView({ notify, openComments, t, demoPhase, commentsCount 
 
   useEffect(() => {
     setSelectedOption("");
+    setSealedVote("");
     setBuyOption("");
+    setVoteTradeAmount("");
     setIsVotePanelOpen(false);
     setIsVoteAccessOpen(false);
     setEpisodeProgress(0);
@@ -178,6 +183,7 @@ export function TheaterView({ notify, openComments, t, demoPhase, commentsCount 
 
   function completeVote(message: string) {
     setIsVoteAccessOpen(false);
+    setSealedVote(selectedOption);
     notify(`${message}，${t.toast.vote}`);
   }
 
@@ -223,6 +229,11 @@ export function TheaterView({ notify, openComments, t, demoPhase, commentsCount 
 
   function formatCount(value: number) {
     return value >= 1000 ? value.toLocaleString("en-US") : String(value);
+  }
+
+  function closeBuyDrawer() {
+    setBuyOption("");
+    setVoteTradeAmount("");
   }
 
   function toggleLike(id: string, forceLike = false) {
@@ -307,6 +318,9 @@ export function TheaterView({ notify, openComments, t, demoPhase, commentsCount 
   }
 
   function renderVotePanel() {
+    const activeDrama = dramas[0];
+    const coin = activeDrama.ipCoin;
+
     return (
       <div className="vote-terminal story-vote-panel" onClick={(event) => event.stopPropagation()}>
         <button className="vote-close" type="button" onClick={() => setIsVotePanelOpen(false)}>
@@ -358,6 +372,17 @@ export function TheaterView({ notify, openComments, t, demoPhase, commentsCount 
               </div>
             </>
           ) : null}
+          {sealedVote ? (
+            <section className="vote-market-cta">
+              <div>
+                <strong>{sealedVote}</strong>
+                <span>{t.theater.voteMarketHint}</span>
+              </div>
+              <button className="outline-btn" type="button" onClick={goMarket}>
+                {t.theater.viewMarket}
+              </button>
+            </section>
+          ) : null}
         </section>
 
         <section className="vote-panel-section market-in-vote">
@@ -380,27 +405,72 @@ export function TheaterView({ notify, openComments, t, demoPhase, commentsCount 
           </div>
           {buyOption ? (
             <>
-              <button className="inline-drawer-backdrop" type="button" aria-label={t.closeSheet} onClick={() => setBuyOption("")} />
+              <button className="inline-drawer-backdrop" type="button" aria-label={t.closeSheet} onClick={closeBuyDrawer} />
               <div className="buy-drawer theater-buy-drawer">
-                <button className="sheet-close mini-close" type="button" onClick={() => setBuyOption("")} aria-label={t.closeSheet}>
+                <button className="sheet-close mini-close" type="button" onClick={closeBuyDrawer} aria-label={t.closeSheet}>
                   ×
                 </button>
                 <div>
                   <strong>{buyOption}</strong>
                   <span>{t.theater.buyAmount}</span>
                 </div>
-                <input inputMode="decimal" placeholder="20 USDT" />
+                <input
+                  inputMode="decimal"
+                  placeholder={buyOption.includes(coin.symbol) ? `100 ${coin.symbol}` : "20 USDT"}
+                  value={voteTradeAmount}
+                  onChange={(event) => setVoteTradeAmount(event.target.value)}
+                />
                 <div className="amount-shortcuts" aria-label={t.theater.buyAmount}>
                   {["1", "5", "10", "100"].map((amount) => (
-                    <button type="button" key={amount}>+{amount}</button>
+                    <button type="button" key={amount} onClick={() => setVoteTradeAmount(amount)}>+{amount}</button>
                   ))}
                 </div>
-                <button className="pink-btn" type="button" onClick={() => notify(t.toast.trade)}>
+                <button className="pink-btn" type="button" onClick={() => {
+                  notify(t.toast.trade);
+                  closeBuyDrawer();
+                }}>
                   {t.theater.trade}
                 </button>
               </div>
             </>
           ) : null}
+        </section>
+
+        <section className="vote-panel-section ip-coin-in-vote">
+          <div className="ip-vote-head">
+            <div>
+              <p className="panel-kicker">{t.market.ipCoinDetail}</p>
+              <h3>{coin.symbol} <small>{activeDrama.title}</small></h3>
+            </div>
+            <button className="outline-btn" type="button" onClick={goMarket}>
+              {t.market.openDetail}
+            </button>
+          </div>
+          <div className="ip-vote-quote">
+            <div>
+              <span>{t.market.priceTrend}</span>
+              <strong>{coin.price}</strong>
+              <em className={coin.change24h.startsWith("-") ? "down" : "up"}>{coin.change24h}</em>
+            </div>
+            <div>
+              <span>{t.market.volume}</span>
+              <strong>{coin.volume24h}</strong>
+              <em>{t.market.holders} {coin.holders}</em>
+            </div>
+          </div>
+          <svg className="ip-vote-sparkline" viewBox="0 0 220 70" role="img" aria-label={t.market.priceTrend}>
+            <path className="grid-line" d="M8 20H212" />
+            <path className="grid-line" d="M8 48H212" />
+            <polyline fill="none" points="8,56 26,48 44,51 62,37 80,42 98,29 116,34 134,22 152,28 170,18 188,24 212,14" stroke="#39ff55" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
+          </svg>
+          <div className="ip-vote-actions">
+            <button className="pink-btn" type="button" onClick={() => setBuyOption(`${coin.symbol} ${t.theater.buy}`)}>
+              {t.theater.buy}
+            </button>
+            <button className="outline-btn" type="button" onClick={() => setBuyOption(`${coin.symbol} ${t.theater.sell}`)}>
+              {t.theater.sell}
+            </button>
+          </div>
         </section>
       </div>
     );

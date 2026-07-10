@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { dramas, ipLaunchRules, paymentMethods, tradeTicks, type DemoPhase } from "@/lib/data";
+import { dramas, paymentMethods, tradeTicks, type DemoPhase } from "@/lib/data";
 import type { Dictionary } from "@/lib/i18n";
 import type { BaiValuationResult } from "@/lib/bai";
 
@@ -29,8 +29,6 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
   const [favoriteIds, setFavoriteIds] = useState<Record<string, boolean>>({});
   const [buyOption, setBuyOption] = useState("");
   const [tradeAmount, setTradeAmount] = useState("");
-  const [homeTab, setHomeTab] = useState(0);
-  const [activeTag, setActiveTag] = useState<string>(t.market.tags[0]);
   const [query, setQuery] = useState("");
   const [paymentId, setPaymentId] = useState("htx");
   const [valuationResults, setValuationResults] = useState<Record<string, BaiValuationResult>>({});
@@ -471,137 +469,107 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
         />
       </div>
 
-      <section className="tag-rail" aria-label="Market tags">
-        {t.market.tags.map((tag) => (
-          <button className={activeTag === tag ? "active" : ""} type="button" key={tag} onClick={() => setActiveTag(tag)}>
-            {tag}
-          </button>
-        ))}
-      </section>
-
-      <section className="market-segment" aria-label={t.market.allMarkets}>
-        {t.market.marketTabs.map((tabLabel, index) => (
-          <button className={homeTab === index ? "active" : ""} type="button" key={tabLabel} onClick={() => setHomeTab(index)}>
-            {tabLabel}
-          </button>
-        ))}
-      </section>
-
-      <div className="section-title compact">
-        <h2>{homeTab === 1 ? t.market.ipLaunchTitle : homeTab === 2 ? t.market.hotTrades : t.market.allMarkets}</h2>
-        <span className="muted mini">{t.market.tabSubtitles[homeTab]}</span>
-      </div>
-
-      {query || activeTag ? (
+      {query ? (
         <div className="active-filter-line">
           <span>{t.market.selectedFilter}</span>
-          <strong>{activeTag}</strong>
-          {query ? <em>{query}</em> : null}
+          <em>{query}</em>
         </div>
       ) : null}
 
-      {homeTab === 0 ? (
-        <section className="prediction-card-list">
+      <section className="market-home-section prediction-home-section">
+        <div className="market-home-head">
+          <div>
+            <h2>{t.market.predictionMarketTitle}</h2>
+            <span>{t.market.predictionMarketSubtitle}</span>
+          </div>
+          <small>{demoPhase.countdown}</small>
+        </div>
+        <div className="prediction-card-list">
           {visibleDramas.map((drama) => {
             const index = dramas.findIndex((item) => item.id === drama.id);
             return (
-          <article className="prediction-card" key={drama.id}>
-            <button className="prediction-card-main" type="button" onClick={() => openMarket(index)}>
-              <div className="prediction-poster" style={{ "--poster": `url(${drama.poster})` } as React.CSSProperties} />
-              <div>
-                <h3>{drama.cardTitle}</h3>
-                <div className="ip-mini-quote">
-                  <b>{drama.ipCoin.symbol}</b>
-                  <strong>{drama.ipCoin.price}</strong>
-                  <em className={drama.ipCoin.change24h.startsWith("-") ? "down" : "up"}>{drama.ipCoin.change24h}</em>
-                </div>
-                <div className="card-option-stack">
-                  {drama.options.map((option, optionIndex) => (
-                    <span key={option}>
-                      <b>{option}</b>
-                      <em>{optionPercents[optionIndex] ?? 10}%</em>
-                    </span>
-                  ))}
-                </div>
-                <span>{t.market.volume} {volumes[index] ?? "18.8K USDT"}</span>
-                <small>{t.market.enterDetail}</small>
-              </div>
-            </button>
-            <button
-              className={`favorite-btn ${favoriteIds[drama.id] ? "active" : ""}`}
-              type="button"
-              onClick={() => toggleFavorite(drama.id)}
-              aria-label={t.market.favorite}
-            >
-              ☆
-            </button>
-          </article>
+              <article className="prediction-card" key={drama.id}>
+                <button className="prediction-card-main" type="button" onClick={() => openMarket(index)}>
+                  <div className="prediction-poster" style={{ "--poster": `url(${drama.poster})` } as React.CSSProperties} />
+                  <div>
+                    <h3>{drama.cardTitle}</h3>
+                    <div className="card-option-stack">
+                      {drama.options.map((option, optionIndex) => (
+                        <span key={option}>
+                          <b>{option}</b>
+                          <em>{optionPercents[optionIndex] ?? 10}%</em>
+                        </span>
+                      ))}
+                    </div>
+                    <span>{t.market.volume} {volumes[index] ?? "18.8K USDT"}</span>
+                    <small>{t.market.enterDetail}</small>
+                  </div>
+                </button>
+                <button
+                  className={`favorite-btn ${favoriteIds[drama.id] ? "active" : ""}`}
+                  type="button"
+                  onClick={() => toggleFavorite(drama.id)}
+                  aria-label={t.market.favorite}
+                >
+                  ☆
+                </button>
+              </article>
             );
           })}
           {visibleDramas.length === 0 ? <p className="empty-state">{t.market.noResults}</p> : null}
-        </section>
-      ) : null}
+        </div>
+      </section>
 
-      {homeTab === 1 ? (
-        <>
-          <section className="launch-tool-strip">
-            <div>
-              <strong>{t.market.estimateWithBai}</strong>
-              <span>{t.market.ipLaunchSubtitle}</span>
-            </div>
-            <button className="outline-btn" type="button" onClick={() => generateLaunchValuation(dramas[0].id)}>
-              {loadingValuations[dramas[0].id] ? t.market.generatingValuation : valuationResults[dramas[0].id] ? t.market.queued : t.market.estimateWithBai}
-            </button>
-          </section>
-          <section className="launch-rule-rail" aria-label={t.market.launchRules}>
-            {ipLaunchRules.slice(0, 4).map((rule) => (
-              <span key={rule[0]}><b>{rule[0]}</b>{rule[1]}</span>
-            ))}
-          </section>
-          <section className="launch-list">
-            {visibleDramas.map((drama) => {
+      <section className="market-home-section hot-ip-section">
+        <div className="market-home-head">
+          <div>
+            <h2>{t.market.hotIpTitle}</h2>
+            <span>{t.market.hotIpSubtitle}</span>
+          </div>
+          <small>24H</small>
+        </div>
+        <div className="market-ip-list">
+          {visibleDramas.map((drama) => {
             const index = dramas.findIndex((item) => item.id === drama.id);
             const valuation = valuationResults[drama.id];
             const isLoading = loadingValuations[drama.id];
             return (
-                <article className="launch-item" key={drama.id}>
+              <article className="ip-market-row" key={`${drama.id}-ip`}>
+                <button className="ip-market-main" type="button" onClick={() => openMarket(index)}>
+                  <div className="ip-token-mark" style={{ "--poster": `url(${drama.poster})` } as React.CSSProperties}>
+                    <span>{drama.ipCoin.symbol.slice(0, 2)}</span>
+                  </div>
                   <div>
-                    <span className="panel-kicker">{drama.ipCoin.symbol}</span>
-                    <h3>{drama.cardTitle}</h3>
-                    <p>{drama.ipCoin.launchType} · {drama.ipCoin.supply}</p>
+                    <strong>{drama.ipCoin.symbol}</strong>
+                    <span>{drama.title}</span>
+                    <small>{t.market.valuationRange}: {valuation?.valuationRange ?? drama.ipCoin.valuationRange}</small>
+                  </div>
+                  <div className="ip-price-cell">
+                    <strong>{drama.ipCoin.price}</strong>
+                    <em className={drama.ipCoin.change24h.startsWith("-") ? "down" : "up"}>{drama.ipCoin.change24h}</em>
+                  </div>
+                </button>
+                <div className="ip-row-meta">
+                  <span>{t.market.volume}<b>{drama.ipCoin.volume24h}</b></span>
+                  <span>{t.market.marketCap}<b>{drama.ipCoin.marketCap}</b></span>
+                  <span>{t.market.holders}<b>{drama.ipCoin.holders}</b></span>
                 </div>
-                <div className="launch-mini-scores">
-                  <span>{t.market.heat}<b>{valuation?.heatScore ?? drama.ipCoin.heatScore}</b></span>
-                  <span>{t.market.risk}<b>{valuation?.riskScore ?? drama.ipCoin.riskScore}</b></span>
-                </div>
-                  <div className="launch-item-actions">
-                    <button className="outline-btn" type="button" onClick={() => openMarket(index)}>
-                      {t.market.openDetail}
-                  </button>
-                  <button className="pink-btn" type="button" onClick={() => generateLaunchValuation(drama.id)}>
-                    {isLoading ? t.market.generatingValuation : valuation ? t.market.queued : t.market.estimateWithBai}
-                  </button>
-                </div>
-                </article>
-              );
-            })}
-            {visibleDramas.length === 0 ? <p className="empty-state">{t.market.noResults}</p> : null}
-          </section>
-        </>
-      ) : null}
-
-      {homeTab === 2 ? (
-        <section className="hot-trade-list">
-          {dramas.flatMap((drama, dramaIndex) => tradeTicks.slice(0, 3).map((tick, tickIndex) => (
-            <button className="hot-trade-row" type="button" key={`${drama.id}-${tick[4]}-${tickIndex}`} onClick={() => openMarket(dramaIndex)}>
-              <b className={tick[0] === "SELL" ? "down" : "up"}>{tick[0]}</b>
-              <span>{drama.ipCoin.symbol}</span>
-              <strong>{tick[1]}</strong>
-              <small>{tick[2]} · {tick[3]}</small>
-            </button>
-          )))}
-        </section>
-      ) : null}
+                {valuation ? (
+                  <div className="launch-result">
+                    <span>{t.market.valuationRange}</span>
+                    <strong>{valuation.valuationRange}</strong>
+                    <em>{valuation.provider.toUpperCase()} · {valuation.model}</em>
+                  </div>
+                ) : null}
+                <button className="outline-btn ip-bai-btn" type="button" onClick={() => generateLaunchValuation(drama.id)}>
+                  {isLoading ? t.market.generatingValuation : valuation ? t.market.queued : t.market.estimateWithBai}
+                </button>
+              </article>
+            );
+          })}
+          {visibleDramas.length === 0 ? <p className="empty-state">{t.market.noResults}</p> : null}
+        </div>
+      </section>
     </main>
   );
 }

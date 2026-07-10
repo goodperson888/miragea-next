@@ -143,6 +143,7 @@ export function AppShell() {
     openComments,
     commentsCount: comments.length,
     goTheater: () => setTab("theater"),
+    goMarket: () => setTab("market"),
     dramas,
     t,
     demoPhase
