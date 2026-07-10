@@ -602,7 +602,7 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
                   <span className="panel-kicker">{t.market.baiValuation}</span>
                   <strong>{coin.valuationRange}</strong>
                 </div>
-                <span className="valuation-time">{t.market.valuationTime}: {coin.valuationUpdatedAt}</span>
+                <span className="valuation-time">{t.market.valuationHorizon}: {coin.valuationHorizon[localeKey]}</span>
                 <p>{coin.baiSummary[localeKey]}</p>
               </section>
 

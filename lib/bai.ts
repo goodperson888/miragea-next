@@ -7,6 +7,7 @@ export type BaiValuationResult = {
   storyScore: number;
   riskScore: number;
   valuationRange: string;
+  valuationHorizon: string;
   generatedAt: string;
   summary: {
     zh: string;
@@ -39,7 +40,7 @@ function extractJson(content: string) {
   }
 }
 
-function mockValuation(dramaId: string): BaiValuationResult {
+function mockValuation(dramaId: string, locale: "zh" | "en" = "zh"): BaiValuationResult {
   const drama = dramas.find((item) => item.id === dramaId) ?? dramas[0];
   return {
     provider: "mock",
@@ -48,6 +49,7 @@ function mockValuation(dramaId: string): BaiValuationResult {
     storyScore: drama.ipCoin.storyScore,
     riskScore: drama.ipCoin.riskScore,
     valuationRange: drama.ipCoin.valuationRange,
+    valuationHorizon: drama.ipCoin.valuationHorizon[locale],
     generatedAt: new Date().toISOString(),
     summary: drama.ipCoin.baiSummary,
     branchOptions: drama.options.map((option) => `${option}线：延展角色冲突并制造下一集钩子`)
@@ -86,6 +88,7 @@ function buildPrompt(dramaId: string, locale: "zh" | "en") {
             storyScore: "0-100 number",
             riskScore: "0-100 number, lower is safer",
             valuationRange: "short price range string, e.g. $0.58 - $0.72",
+            valuationHorizon: "forecast horizon string, e.g. next 24 hours",
             summaryZh: "one concise Chinese paragraph",
             summaryEn: "one concise English paragraph",
             branchOptions: ["3 concise Chinese branch ideas"]
@@ -102,7 +105,7 @@ export async function generateBaiValuation(dramaId: string, locale: "zh" | "en" 
   const model = process.env.GLM_MODEL ?? "glm-4-flash";
 
   if (provider !== "glm" || !apiKey) {
-    return mockValuation(dramaId);
+    return mockValuation(dramaId, locale);
   }
 
   const { drama, messages } = buildPrompt(dramaId, locale);
@@ -122,7 +125,7 @@ export async function generateBaiValuation(dramaId: string, locale: "zh" | "en" 
       })
     });
 
-    if (!response.ok) return mockValuation(dramaId);
+    if (!response.ok) return mockValuation(dramaId, locale);
 
     const payload = await response.json() as {
       choices?: Array<{ message?: { content?: string } }>;
@@ -130,7 +133,7 @@ export async function generateBaiValuation(dramaId: string, locale: "zh" | "en" 
     };
     const content = payload.choices?.[0]?.message?.content ?? "";
     const parsed = extractJson(content);
-    if (!parsed) return mockValuation(dramaId);
+    if (!parsed) return mockValuation(dramaId, locale);
 
     return {
       provider: "glm",
@@ -139,6 +142,7 @@ export async function generateBaiValuation(dramaId: string, locale: "zh" | "en" 
       storyScore: clampScore(parsed.storyScore, drama.ipCoin.storyScore),
       riskScore: clampScore(parsed.riskScore, drama.ipCoin.riskScore),
       valuationRange: typeof parsed.valuationRange === "string" ? parsed.valuationRange : drama.ipCoin.valuationRange,
+      valuationHorizon: typeof parsed.valuationHorizon === "string" ? parsed.valuationHorizon : drama.ipCoin.valuationHorizon[locale],
       generatedAt: new Date().toISOString(),
       summary: {
         zh: typeof parsed.summaryZh === "string" ? parsed.summaryZh : drama.ipCoin.baiSummary.zh,
@@ -149,6 +153,6 @@ export async function generateBaiValuation(dramaId: string, locale: "zh" | "en" 
         : drama.options.map((option) => `${option}线：延展角色冲突并制造下一集钩子`)
     };
   } catch {
-    return mockValuation(dramaId);
+    return mockValuation(dramaId, locale);
   }
 }

@@ -13,19 +13,6 @@ export function ProfileView({ t, notify }: { t: Dictionary; notify: (message: st
   const [isGenerating, setIsGenerating] = useState(false);
   const [pushEnabled, setPushEnabled] = useState(true);
 
-  function formatValuationTime(value?: string) {
-    const isZh = t.langLabel === "EN";
-    const time = value ? new Date(value) : new Date();
-    const safeTime = Number.isNaN(time.getTime()) ? new Date() : time;
-    return safeTime.toLocaleString(isZh ? "zh-CN" : "en-US", {
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
-  }
-
   async function runCreatorAction(kind: "bai" | "ip") {
     const isZh = t.langLabel === "EN";
     if (kind === "bai") {
@@ -38,15 +25,14 @@ export function ProfileView({ t, notify }: { t: Dictionary; notify: (message: st
         });
         if (!response.ok) throw new Error("B.AI generation failed");
         const result = await response.json() as BaiValuationResult;
-        const generatedAt = formatValuationTime(result.generatedAt);
+        const horizon = result.valuationHorizon || t.market.defaultValuationHorizon;
         setCreatorBranches(result.branchOptions);
         setCreatorStatus(isZh
-          ? [`${result.branchOptions.length} 个生成分支`, `估值 ${result.valuationRange}`, `${t.market.valuationTime} ${generatedAt}`, `${result.provider.toUpperCase()} ${result.model}`]
-          : [`${result.branchOptions.length} new branches`, `Valuation ${result.valuationRange}`, `${t.market.valuationTime} ${generatedAt}`, `${result.provider.toUpperCase()} ${result.model}`]);
+          ? [`${result.branchOptions.length} 个生成分支`, `估值 ${result.valuationRange}`, `${t.market.valuationHorizon} ${horizon}`, `${result.provider.toUpperCase()} ${result.model}`]
+          : [`${result.branchOptions.length} new branches`, `Valuation ${result.valuationRange}`, `${t.market.valuationHorizon} ${horizon}`, `${result.provider.toUpperCase()} ${result.model}`]);
         notify(t.profile.creatorQueued);
       } catch {
-        const generatedAt = formatValuationTime();
-        setCreatorStatus(isZh ? ["4 个草稿", "14 个分支", `${t.market.valuationTime} ${generatedAt}`, "B.AI 结果 3"] : ["4 drafts", "14 branches", `${t.market.valuationTime} ${generatedAt}`, "B.AI results 3"]);
+        setCreatorStatus(isZh ? ["4 个草稿", "14 个分支", `${t.market.valuationHorizon} ${t.market.defaultValuationHorizon}`, "B.AI 结果 3"] : ["4 drafts", "14 branches", `${t.market.valuationHorizon} ${t.market.defaultValuationHorizon}`, "B.AI results 3"]);
         notify(t.profile.creatorQueued);
       } finally {
         setIsGenerating(false);

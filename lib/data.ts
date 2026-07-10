@@ -39,6 +39,10 @@ export const dramas = [
       unlock: "20% TGE, 6-month creator lock",
       valuationRange: "$0.58 - $0.72",
       valuationUpdatedAt: "2026-07-10 12:18 CST",
+      valuationHorizon: {
+        zh: "未来 24 小时（至 2026-07-11 12:18 CST）",
+        en: "Next 24 hours (until 2026-07-11 12:18 CST)"
+      },
       heatScore: 92,
       storyScore: 88,
       riskScore: 32,
@@ -75,6 +79,10 @@ export const dramas = [
       unlock: "15% TGE, 9-month creator lock",
       valuationRange: "$0.31 - $0.39",
       valuationUpdatedAt: "2026-07-10 11:58 CST",
+      valuationHorizon: {
+        zh: "未来 24 小时（至 2026-07-11 11:58 CST）",
+        en: "Next 24 hours (until 2026-07-11 11:58 CST)"
+      },
       heatScore: 76,
       storyScore: 81,
       riskScore: 48,
