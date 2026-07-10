@@ -262,9 +262,10 @@ export const dictionaries = {
       sent: "评论已发布"
     },
     profile: {
-      assetTitle: "HTX 资产总览",
+      assetTitle: "资产总览",
       universal: "通用资产",
       prediction: "预测资产",
+      ipAsset: "IP 币资产",
       creatorStudio: "创作者工具",
       creatorSubtitle: "用 B.AI 生成分支、预告和 IP 币估值",
       createDrama: "生成分支",
@@ -560,9 +561,10 @@ export const dictionaries = {
       sent: "Comment posted"
     },
     profile: {
-      assetTitle: "TOTAL HTX ASSETS",
+      assetTitle: "TOTAL ASSETS",
       universal: "UNIVERSAL",
       prediction: "PREDICTION",
+      ipAsset: "IP COINS",
       creatorStudio: "Creator Studio",
       creatorSubtitle: "Generate branches, trailers, and IP coin valuation with B.AI",
       createDrama: "Generate Branches",

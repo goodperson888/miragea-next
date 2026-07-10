@@ -55,10 +55,15 @@ export function ProfileView({ t, notify }: { t: Dictionary; notify: (message: st
       </section>
       <section className="panel asset-board">
         <div className="asset-label">{t.profile.assetTitle}</div>
-        <div className="asset-value"><strong style={{ color: "var(--pink)" }}>14,320.75</strong><span>$HTX-E</span></div>
+        <div className="asset-value"><strong style={{ color: "var(--pink)" }}>14,320.75</strong><span>$HTX</span></div>
         <div className="asset-grid">
-          <div className="asset-mini"><p>{t.profile.universal}</p><strong>10,420.00</strong></div>
-          <div className="asset-mini"><p>{t.profile.prediction}</p><strong style={{ color: "var(--cyan)" }}>3,900.75</strong></div>
+          <div className="asset-mini"><p>{t.profile.universal}</p><strong>10,420.00 HTX</strong></div>
+          <div className="asset-mini"><p>{t.profile.prediction}</p><strong style={{ color: "var(--cyan)" }}>3,900.75 USDT</strong></div>
+          <div className="asset-mini ip-asset-mini">
+            <p>{t.profile.ipAsset}</p>
+            <strong>18,420 ALLEY</strong>
+            <small>7,210 RAIN</small>
+          </div>
         </div>
       </section>
       <section className="creator-studio-card">

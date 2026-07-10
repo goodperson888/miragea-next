@@ -1980,6 +1980,18 @@ h1 {
   font-size: 20px;
 }
 
+.asset-mini small {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.ip-asset-mini {
+  grid-column: 1 / -1;
+}
+
 .two-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

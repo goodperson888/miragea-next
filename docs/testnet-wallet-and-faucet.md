@@ -10,7 +10,7 @@
 - 网络：Base Sepolia
 - Gas 测试币：Base Sepolia ETH
 - 产品展示资产：HTX / USDT / IP 币
-- 测试网实现资产：Mock HTX-E / Mock USDT / Mock IP Coin
+- 测试网实现资产：Mock HTX / Mock USDT / Mock IP Coin
 
 说明：目前不建议依赖“HTX 官方测试币水龙头”。公开资料里没有稳定、通用、适合比赛现场使用的 HTX 测试币 faucet。比赛阶段更稳的做法是用 Base Sepolia ETH 作为链上 gas，用自部署 Mock ERC20 表示产品中的 `HTX`、`USDT` 和剧集 `IP 币` 资产。
 
@@ -48,16 +48,16 @@ https://docs.base.org/base-chain/network-information/network-faucets
 
 ## 4. HTX 测试资产怎么处理
 
-比赛版建议不要找真实 HTX 测试币，而是部署一个 Mock ERC20。前端可以展示为 `HTX`，合约名保留 `HTX-E Demo Token` 以区分测试环境：
+比赛版建议不要找真实 HTX 测试币，而是部署一个 Mock ERC20。前端可以展示为 `HTX`，合约名保留 `HTX Demo Token` 以区分测试环境：
 
 ```text
-Token name: HTX-E Demo Token
-Symbol: HTX-E
+Token name: HTX Demo Token
+Symbol: HTX
 Decimals: 18
 Network: Base Sepolia
 ```
 
-产品 UI 中的 `HTX-E`、`USDT`、剧情预测代币、剧集 `IP 币` 都应标记为 Demo / Testnet Simulation。
+产品 UI 中的 `HTX`、`USDT`、剧情预测代币、剧集 `IP 币` 都应标记为 Demo / Testnet Simulation。
 
 市场和支付界面可以按生产版展示多种支付方式：
 
@@ -75,9 +75,9 @@ Network: Base Sepolia
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-contract MockHTXE {
-    string public name = "HTX-E Demo Token";
-    string public symbol = "HTX-E";
+contract MockHTX {
+    string public name = "HTX Demo Token";
+    string public symbol = "HTX";
     uint8 public decimals = 18;
     mapping(address => uint256) public balanceOf;
 
@@ -96,7 +96,7 @@ contract MockHTXE {
 路演时建议这样说：
 
 ```text
-当前版本运行在测试网模拟盘模式。钱包用于证明 Web3 账户身份，Base Sepolia ETH 只用于测试网 gas。HTX-E、USDT、预测代币和剧集 IP 币均为 Demo Token，没有现金价值，也不会进行真实充值、提现或交易。
+当前版本运行在测试网模拟盘模式。钱包用于证明 Web3 账户身份，Base Sepolia ETH 只用于测试网 gas。HTX、USDT、预测代币和剧集 IP 币均为 Demo Token，没有现金价值，也不会进行真实充值、提现或交易。
 ```
 
 ## 6. 后续接真实资产前必须补齐

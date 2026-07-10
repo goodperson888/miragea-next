@@ -238,7 +238,7 @@ Demo 中只展示手续费逻辑，不执行真实扣费或真实分润。
 
 后续建议实现：
 
-- Mock HTX-E ERC20 合约
+- Mock HTX ERC20 合约
 - Mock IP Coin ERC20 合约
 - Faucet 页面
 - 投票快照 mock 事件
