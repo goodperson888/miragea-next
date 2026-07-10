@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { dramas, paymentMethods, tradeTicks, type DemoPhase } from "@/lib/data";
 import type { Dictionary } from "@/lib/i18n";
-import type { BaiValuationResult } from "@/lib/bai";
 
 type Props = {
   notify: (message: string) => void;
@@ -31,8 +30,6 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
   const [tradeAmount, setTradeAmount] = useState("");
   const [query, setQuery] = useState("");
   const [paymentId, setPaymentId] = useState("htx");
-  const [valuationResults, setValuationResults] = useState<Record<string, BaiValuationResult>>({});
-  const [loadingValuations, setLoadingValuations] = useState<Record<string, boolean>>({});
   const [tradeCount, setTradeCount] = useState(0);
   const [infoTab, setInfoTab] = useState<"rules" | "background">("rules");
   const [activityTab, setActivityTab] = useState<"comments" | "positions" | "dynamics">("comments");
@@ -62,34 +59,6 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
       notify(next ? t.toast.favoriteAdded : t.toast.favoriteRemoved);
       return { ...current, [id]: next };
     });
-  }
-
-  async function runBaiValuation(id: string) {
-    setLoadingValuations((current) => ({ ...current, [id]: true }));
-    notify(t.toast.baiQueued);
-    try {
-      const response = await fetch("/api/bai/valuation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dramaId: id, locale: t.langLabel === "EN" ? "zh" : "en" })
-      });
-      if (!response.ok) throw new Error("B.AI valuation failed");
-      const result = await response.json() as BaiValuationResult & { mode?: string };
-      setValuationResults((current) => ({ ...current, [id]: result }));
-      notify(`${t.toast.baiReady} · ${result.provider.toUpperCase()}`);
-    } catch {
-      notify(t.toast.baiQueued);
-    } finally {
-      setLoadingValuations((current) => ({ ...current, [id]: false }));
-    }
-  }
-
-  function generateLaunchValuation(id: string) {
-    void runBaiValuation(id);
-  }
-
-  function refreshValuation(id: string) {
-    void runBaiValuation(id);
   }
 
   function confirmTrade() {
@@ -144,13 +113,10 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
     if (!market) return null;
     const coin = market.ipCoin;
     const localeKey = t.langLabel === "EN" ? "zh" : "en";
-    const valuation = valuationResults[market.id];
-    const heatScore = valuation?.heatScore ?? coin.heatScore;
-    const storyScore = valuation?.storyScore ?? coin.storyScore;
-    const riskScore = valuation?.riskScore ?? coin.riskScore;
-    const valuationRange = valuation?.valuationRange ?? coin.valuationRange;
-    const summary = valuation?.summary?.[localeKey] ?? coin.baiSummary[localeKey];
-    const isLoading = loadingValuations[market.id];
+    const heatScore = coin.heatScore;
+    const storyScore = coin.storyScore;
+    const riskScore = coin.riskScore;
+    const summary = coin.baiSummary[localeKey];
 
     return (
       <section className="ip-coin-panel">
@@ -184,7 +150,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
         <section className="bai-valuation">
           <div>
             <span className="panel-kicker">{t.market.baiValuation}</span>
-            <strong>{valuationRange}</strong>
+            <strong>{coin.valuationRange}</strong>
           </div>
           <div className="valuation-grid">
             {renderValuationScore(t.market.heat, heatScore)}
@@ -192,16 +158,6 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
             {renderValuationScore(t.market.risk, riskScore, "risk")}
           </div>
           <p>{summary}</p>
-          {valuation?.branchOptions?.length ? (
-            <div className="bai-branches">
-              {valuation.branchOptions.map((branch) => (
-                <span key={branch}>{branch}</span>
-              ))}
-            </div>
-          ) : null}
-          <button className="outline-btn valuation-refresh" type="button" onClick={() => refreshValuation(market.id)}>
-            {isLoading ? t.market.generatingValuation : valuation ? t.market.valuationRefreshed : t.market.refreshValuation}
-          </button>
         </section>
 
         <div className="coin-info-grid">
@@ -269,7 +225,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
           </article>
           <article>
             <strong>11:58</strong>
-            <span>B.AI 估值刷新 · {(valuationResults[market.id]?.valuationRange ?? market.ipCoin.valuationRange)}</span>
+            <span>B.AI 估值 · {market.ipCoin.valuationRange}</span>
           </article>
         </section>
       );
@@ -532,8 +488,6 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
         <div className="market-ip-list">
           {visibleDramas.map((drama) => {
             const index = dramas.findIndex((item) => item.id === drama.id);
-            const valuation = valuationResults[drama.id];
-            const isLoading = loadingValuations[drama.id];
             return (
               <article className="ip-market-row" key={`${drama.id}-ip`}>
                 <button className="ip-market-main" type="button" onClick={() => openMarket(index)}>
@@ -543,7 +497,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
                   <div>
                     <strong>{drama.ipCoin.symbol}</strong>
                     <span>{drama.title}</span>
-                    <small>{t.market.valuationRange}: {valuation?.valuationRange ?? drama.ipCoin.valuationRange}</small>
+                    <small>{t.market.valuationRange}: {drama.ipCoin.valuationRange}</small>
                   </div>
                   <div className="ip-price-cell">
                     <strong>{drama.ipCoin.price}</strong>
@@ -555,16 +509,6 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
                   <span>{t.market.marketCap}<b>{drama.ipCoin.marketCap}</b></span>
                   <span>{t.market.holders}<b>{drama.ipCoin.holders}</b></span>
                 </div>
-                {valuation ? (
-                  <div className="launch-result">
-                    <span>{t.market.valuationRange}</span>
-                    <strong>{valuation.valuationRange}</strong>
-                    <em>{valuation.provider.toUpperCase()} · {valuation.model}</em>
-                  </div>
-                ) : null}
-                <button className="outline-btn ip-bai-btn" type="button" onClick={() => generateLaunchValuation(drama.id)}>
-                  {isLoading ? t.market.generatingValuation : valuation ? t.market.queued : t.market.estimateWithBai}
-                </button>
               </article>
             );
           })}
