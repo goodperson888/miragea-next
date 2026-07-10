@@ -236,7 +236,7 @@ export const dictionaries = {
       sharedComments: "同步评论",
       commentCountUnit: "条评论",
       openSharedComments: "打开评论",
-      rulesText: "本轮以 24 小时内剧情投票快照为准，预测最终票数最高的选项。市场同时展示该剧 IP 币发行规则、行情和 B.AI 估值，所有资产均为测试网模拟。",
+      rulesText: "本轮以 24 小时内剧情投票快照为准，预测最终票数最高的选项。市场同时展示该剧 IP 币行情、交易数据和 B.AI 估值，所有资产均为测试网模拟。",
       backgroundText: "第 07 集后主角发现同盟身份异常，后续可能走向复仇、和解或逃亡。用户可先投票决定剧情，也可以参与剧情预测或查看该剧 IP 币行情。",
       ledgerRows: [
         ["+", "入金", "ID: tx_8829...01", "+1,000 USDT", "10月12日 14:30", "up"],
@@ -538,7 +538,7 @@ export const dictionaries = {
       sharedComments: "Synced comments",
       commentCountUnit: "comments",
       openSharedComments: "Open comments",
-      rulesText: "This round resolves against the 24-hour story-vote snapshot. The market also shows this drama's IP coin launch rules, quote data, and B.AI valuation. All assets are testnet simulations.",
+      rulesText: "This round resolves against the 24-hour story-vote snapshot. The market also shows this drama's IP coin quotes, trading data, and B.AI valuation. All assets are testnet simulations.",
       backgroundText: "After episode 07, the lead discovers an ally's hidden identity. Users can vote on the story, trade the story prediction, or inspect this drama's IP coin market.",
       ledgerRows: [
         ["+", "DEPOSIT", "ID: tx_8829...01", "+1,000 USDT", "12 Oct 14:30", "up"],

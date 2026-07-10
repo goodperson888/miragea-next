@@ -163,12 +163,6 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
           <p>{summary}</p>
         </section>
 
-        <div className="coin-info-grid">
-          <div><span>{t.market.supply}</span><strong>{coin.supply}</strong></div>
-          <div><span>{t.market.launchRules}</span><strong>{coin.launchType}</strong></div>
-          <div><span>Unlock</span><strong>{coin.unlock}</strong></div>
-        </div>
-
         <section className="trade-tape">
           <div className="market-chart-head">
             <strong>{t.market.latestTrades}</strong>
