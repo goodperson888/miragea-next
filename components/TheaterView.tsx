@@ -22,8 +22,11 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
   const [buyOption, setBuyOption] = useState("");
   const [voteTradeAmount, setVoteTradeAmount] = useState("");
   const [detailDramaIndex, setDetailDramaIndex] = useState<number | null>(null);
+  const [detailTab, setDetailTab] = useState<"ip" | "prediction">("ip");
   const [detailTradeSide, setDetailTradeSide] = useState<"buy" | "sell" | "">("");
   const [detailTradeAmount, setDetailTradeAmount] = useState("");
+  const [detailPredictionOption, setDetailPredictionOption] = useState("");
+  const [detailPredictionAmount, setDetailPredictionAmount] = useState("");
   const [detailRange, setDetailRange] = useState("1H");
   const [activeIndex, setActiveIndex] = useState(0);
   const [finishedEpisodeIndex, setFinishedEpisodeIndex] = useState(0);
@@ -118,8 +121,11 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
     setBuyOption("");
     setVoteTradeAmount("");
     setDetailDramaIndex(null);
+    setDetailTab("ip");
     setDetailTradeSide("");
     setDetailTradeAmount("");
+    setDetailPredictionOption("");
+    setDetailPredictionAmount("");
     setIsVotePanelOpen(false);
     setIsVoteAccessOpen(false);
     setEpisodeProgress(0);
@@ -248,17 +254,23 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
     return 0;
   }
 
-  function openDramaDetail(index: number) {
+  function openDramaDetail(index: number, tab: "ip" | "prediction" = "ip") {
     setDetailDramaIndex(index);
+    setDetailTab(tab);
     setDetailTradeSide("");
     setDetailTradeAmount("");
+    setDetailPredictionOption("");
+    setDetailPredictionAmount("");
     setIsVotePanelOpen(false);
   }
 
   function closeDramaDetail() {
     setDetailDramaIndex(null);
+    setDetailTab("ip");
     setDetailTradeSide("");
     setDetailTradeAmount("");
+    setDetailPredictionOption("");
+    setDetailPredictionAmount("");
   }
 
   function confirmDetailTrade(drama: Drama) {
@@ -266,6 +278,12 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
     notify(`${drama.ipCoin.symbol} ${side} · ${t.toast.trade}`);
     setDetailTradeSide("");
     setDetailTradeAmount("");
+  }
+
+  function confirmDetailPredictionTrade() {
+    notify(`${detailPredictionOption} · ${t.toast.trade}`);
+    setDetailPredictionOption("");
+    setDetailPredictionAmount("");
   }
 
   function toggleLike(id: string, forceLike = false) {
@@ -314,14 +332,14 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
     );
   }
 
-  function renderTrendLineChart() {
+  function renderTrendLineChart(labels: readonly string[] = voteOptions.map((option) => option.label)) {
     return (
       <div className="trend-chart compact-trend" aria-label={t.theater.liveVoteChart}>
         <div className="trend-legend">
-          {trendLines.map((line) => (
+          {trendLines.map((line, index) => (
             <span key={line.label}>
               <i style={{ background: line.color }} />
-              {line.label} {line.percent}%
+              {labels[index] ?? line.label} {line.percent}%
             </span>
           ))}
         </div>
@@ -352,6 +370,7 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
   function renderVotePanel() {
     const activeDrama = dramas[0];
     const coin = activeDrama.ipCoin;
+    const activeDramaIndex = 0;
 
     return (
       <div className="vote-terminal story-vote-panel" onClick={(event) => event.stopPropagation()}>
@@ -474,7 +493,7 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
               <p className="panel-kicker">{t.market.ipCoinDetail}</p>
               <h3>{coin.symbol} <small>{activeDrama.title}</small></h3>
             </div>
-            <button className="outline-btn" type="button" onClick={goMarket}>
+            <button className="outline-btn" type="button" onClick={() => openDramaDetail(activeDramaIndex, "ip")}>
               {t.market.openDetail}
             </button>
           </div>
@@ -534,83 +553,141 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
             </div>
           </div>
 
-          <div className="detail-coin-header">
-            <div>
-              <strong>{coin.symbol}</strong>
-              <span>{t.market.dramaCoin}</span>
-            </div>
-            <div>
-              <b>{coin.price}</b>
-              <em className={coin.change24h.startsWith("-") ? "down" : "up"}>{coin.change24h}</em>
-            </div>
-          </div>
-
-          <div className="detail-range-tabs" aria-label={t.market.priceTrend}>
-            {["1H", "4H", "1D"].map((range) => (
-              <button className={detailRange === range ? "active" : ""} type="button" key={range} onClick={() => setDetailRange(range)}>
-                {range}
-              </button>
-            ))}
-          </div>
-          <svg className="detail-coin-chart" viewBox="0 0 236 96" role="img" aria-label={t.market.priceTrend}>
-            <path className="grid-line" d="M8 24H228" />
-            <path className="grid-line" d="M8 52H228" />
-            <path className="grid-line" d="M8 80H228" />
-            <polyline fill="none" points={chartByRange[detailRange]} stroke="#39ff55" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
-          </svg>
-
-          <div className="detail-coin-stats">
-            <span>{t.market.volume}<b>{coin.volume24h}</b></span>
-            <span>{t.market.marketCap}<b>{coin.marketCap}</b></span>
-            <span>{t.market.liquidity}<b>{coin.liquidity}</b></span>
-            <span>{t.market.netFlow}<b className={coin.flow24h.startsWith("-") ? "down" : "up"}>{coin.flow24h}</b></span>
-          </div>
-
-          <div className="detail-trade-actions">
-            <button className={detailTradeSide === "buy" ? "pink-btn active" : "pink-btn"} type="button" onClick={() => setDetailTradeSide("buy")}>
-              {t.theater.buy}
+          <div className="detail-main-tabs" aria-label={t.theater.dramaDetail}>
+            <button className={detailTab === "ip" ? "active" : ""} type="button" onClick={() => setDetailTab("ip")}>
+              {t.market.ipCoinTab}
             </button>
-            <button className={detailTradeSide === "sell" ? "outline-btn active" : "outline-btn"} type="button" onClick={() => setDetailTradeSide("sell")}>
-              {t.theater.sell}
+            <button className={detailTab === "prediction" ? "active" : ""} type="button" onClick={() => setDetailTab("prediction")}>
+              {t.market.predictionMarketTab}
             </button>
           </div>
 
-          {detailTradeSide ? (
-            <div className="detail-trade-box">
-              <label>
-                {detailTradeSide === "sell" ? t.theater.sell : t.theater.buy} {coin.symbol}
-                <input
-                  inputMode="decimal"
-                  placeholder={detailTradeSide === "sell" ? `100 ${coin.symbol}` : "20 USDT"}
-                  value={detailTradeAmount}
-                  onChange={(event) => setDetailTradeAmount(event.target.value)}
-                />
-              </label>
-              <div className="amount-shortcuts" aria-label={t.theater.buyAmount}>
-                {["1", "5", "10", "100"].map((amount) => (
-                  <button type="button" key={amount} onClick={() => setDetailTradeAmount(amount)}>+{amount}</button>
+          {detailTab === "ip" ? (
+            <>
+              <div className="detail-coin-header">
+                <div>
+                  <strong>{coin.symbol}</strong>
+                  <span>{t.market.dramaCoin}</span>
+                </div>
+                <div>
+                  <b>{coin.price}</b>
+                  <em className={coin.change24h.startsWith("-") ? "down" : "up"}>{coin.change24h}</em>
+                </div>
+              </div>
+
+              <div className="detail-range-tabs" aria-label={t.market.priceTrend}>
+                {["1H", "4H", "1D"].map((range) => (
+                  <button className={detailRange === range ? "active" : ""} type="button" key={range} onClick={() => setDetailRange(range)}>
+                    {range}
+                  </button>
                 ))}
               </div>
-              <button className="pink-btn" type="button" onClick={() => confirmDetailTrade(drama)}>
-                {t.theater.trade}
-              </button>
-            </div>
-          ) : null}
+              <svg className="detail-coin-chart" viewBox="0 0 236 96" role="img" aria-label={t.market.priceTrend}>
+                <path className="grid-line" d="M8 24H228" />
+                <path className="grid-line" d="M8 52H228" />
+                <path className="grid-line" d="M8 80H228" />
+                <polyline fill="none" points={chartByRange[detailRange]} stroke="#39ff55" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
+              </svg>
 
-          <section className="detail-trade-tape">
-            <div className="market-chart-head">
-              <strong>{t.market.latestTrades}</strong>
-              <span>{t.market.smartMoney}</span>
-            </div>
-            {tradeTicks.map((tick) => (
-              <article key={`${tick[0]}-${tick[1]}-${tick[4]}`}>
-                <b className={tick[0] === "SELL" ? "down" : "up"}>{tick[0]}</b>
-                <span>{tick[1]}</span>
-                <span>{tick[2]}</span>
-                <small>{tick[3]} · {tick[4]}</small>
-              </article>
-            ))}
-          </section>
+              <div className="detail-coin-stats">
+                <span>{t.market.volume}<b>{coin.volume24h}</b></span>
+                <span>{t.market.marketCap}<b>{coin.marketCap}</b></span>
+                <span>{t.market.liquidity}<b>{coin.liquidity}</b></span>
+                <span>{t.market.netFlow}<b className={coin.flow24h.startsWith("-") ? "down" : "up"}>{coin.flow24h}</b></span>
+              </div>
+
+              <div className="detail-trade-actions">
+                <button className={detailTradeSide === "buy" ? "pink-btn active" : "pink-btn"} type="button" onClick={() => setDetailTradeSide("buy")}>
+                  {t.theater.buy}
+                </button>
+                <button className={detailTradeSide === "sell" ? "outline-btn active" : "outline-btn"} type="button" onClick={() => setDetailTradeSide("sell")}>
+                  {t.theater.sell}
+                </button>
+              </div>
+
+              {detailTradeSide ? (
+                <div className="detail-trade-box">
+                  <label>
+                    {detailTradeSide === "sell" ? t.theater.sell : t.theater.buy} {coin.symbol}
+                    <input
+                      inputMode="decimal"
+                      placeholder={detailTradeSide === "sell" ? `100 ${coin.symbol}` : "20 USDT"}
+                      value={detailTradeAmount}
+                      onChange={(event) => setDetailTradeAmount(event.target.value)}
+                    />
+                  </label>
+                  <div className="amount-shortcuts" aria-label={t.theater.buyAmount}>
+                    {["1", "5", "10", "100"].map((amount) => (
+                      <button type="button" key={amount} onClick={() => setDetailTradeAmount(amount)}>+{amount}</button>
+                    ))}
+                  </div>
+                  <button className="pink-btn" type="button" onClick={() => confirmDetailTrade(drama)}>
+                    {t.theater.trade}
+                  </button>
+                </div>
+              ) : null}
+
+              <section className="detail-trade-tape">
+                <div className="market-chart-head">
+                  <strong>{t.market.latestTrades}</strong>
+                  <span>{t.market.smartMoney}</span>
+                </div>
+                {tradeTicks.map((tick) => (
+                  <article key={`${tick[0]}-${tick[1]}-${tick[4]}`}>
+                    <b className={tick[0] === "SELL" ? "down" : "up"}>{tick[0]}</b>
+                    <span>{tick[1]}</span>
+                    <span>{tick[2]}</span>
+                    <small>{tick[3]} · {tick[4]}</small>
+                  </article>
+                ))}
+              </section>
+            </>
+          ) : (
+            <section className="detail-tab-panel drama-prediction-panel">
+              <div className="market-chart-head">
+                <strong>{t.market.liveTrend}</strong>
+                <span>{t.market.deadline} {demoPhase.countdown}</span>
+              </div>
+              {renderTrendLineChart(drama.options)}
+              <div className="market-option-list detail-options">
+                {drama.options.map((option, index) => (
+                  <article key={option}>
+                    <div>
+                      <strong>{option}</strong>
+                      <span>{t.theater.predictionShare} {voteOptions[index]?.percent ?? 10}%</span>
+                    </div>
+                    <button className="pink-btn" type="button" onClick={() => {
+                      setDetailPredictionOption(option);
+                      setDetailPredictionAmount("");
+                    }}>
+                      {t.theater.buy}
+                    </button>
+                  </article>
+                ))}
+              </div>
+              {detailPredictionOption ? (
+                <div className="detail-trade-box">
+                  <label>
+                    {detailPredictionOption}
+                    <input
+                      inputMode="decimal"
+                      placeholder="20 USDT"
+                      value={detailPredictionAmount}
+                      onChange={(event) => setDetailPredictionAmount(event.target.value)}
+                    />
+                  </label>
+                  <div className="amount-shortcuts" aria-label={t.theater.buyAmount}>
+                    {["1", "5", "10", "100"].map((amount) => (
+                      <button type="button" key={amount} onClick={() => setDetailPredictionAmount(amount)}>+{amount}</button>
+                    ))}
+                  </div>
+                  <button className="pink-btn" type="button" onClick={confirmDetailPredictionTrade}>
+                    {t.theater.trade}
+                  </button>
+                </div>
+              ) : null}
+            </section>
+          )}
         </section>
       </>
     );
@@ -705,21 +782,16 @@ export function TheaterView({ notify, openComments, goMarket, t, demoPhase, comm
                     </button>
                     <p>{episode.desc}</p>
                   </div>
-                  <div className="watch-action-row">
-                    <button
-                      className="pink-btn watch-vote-btn"
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setIsVotePanelOpen(true);
-                      }}
-                    >
-                      {t.theater.openVotePanel}
-                    </button>
-                    <button className="outline-btn watch-market-btn" type="button" onClick={() => openDramaDetail(dramaIndexForEpisode(episode))}>
-                      {t.theater.openIpMarket}
-                    </button>
-                  </div>
+                  <button
+                    className="pink-btn watch-vote-btn"
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setIsVotePanelOpen(true);
+                    }}
+                  >
+                    {t.theater.openVotePanel}
+                  </button>
                 </div>
               ) : null}
 

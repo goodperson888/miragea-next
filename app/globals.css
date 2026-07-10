@@ -532,25 +532,12 @@ h1 {
 }
 
 .watch-vote-btn,
-.watch-market-btn,
 .watch-overlay .next-episode-btn {
   width: fit-content;
   min-width: 138px;
   min-height: 42px;
   margin-top: 0;
   border-radius: 999px;
-}
-
-.watch-action-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-
-.watch-market-btn {
-  min-width: 98px;
-  border-color: rgba(13, 231, 243, 0.34);
-  color: var(--cyan);
 }
 
 .drama-title-trigger {
@@ -2865,6 +2852,33 @@ h1 {
   position: absolute;
   top: 12px;
   right: 14px;
+}
+
+.detail-main-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.detail-main-tabs button {
+  min-height: 38px;
+  border: 1px solid rgba(13, 231, 243, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.detail-main-tabs button.active {
+  border-color: rgba(13, 231, 243, 0.42);
+  background: rgba(13, 231, 243, 0.13);
+  color: var(--cyan);
+}
+
+.detail-tab-panel {
+  display: grid;
+  gap: 12px;
 }
 
 .info-tabs {

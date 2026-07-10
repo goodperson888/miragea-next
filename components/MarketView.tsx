@@ -31,6 +31,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
   const [query, setQuery] = useState("");
   const [paymentId, setPaymentId] = useState("htx");
   const [tradeCount, setTradeCount] = useState(0);
+  const [detailTab, setDetailTab] = useState<"ip" | "prediction">("ip");
   const [infoTab, setInfoTab] = useState<"rules" | "background">("rules");
   const [activityTab, setActivityTab] = useState<"comments" | "positions" | "dynamics">("comments");
   const market = selectedMarket === null ? null : dramas[selectedMarket];
@@ -39,10 +40,11 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
     return !query.trim() || text.includes(query.trim().toLowerCase());
   });
 
-  function openMarket(index: number) {
+  function openMarket(index: number, tab: "ip" | "prediction" = "ip") {
     setSelectedMarket(index);
     setBuyOption("");
     setTradeAmount("");
+    setDetailTab(tab);
     setInfoTab("rules");
     setActivityTab("comments");
   }
@@ -320,55 +322,67 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
             </div>
           </div>
 
-          <div className="market-chart-head">
-            <strong>{t.market.liveTrend}</strong>
-            <span>{t.market.deadline} {demoPhase.countdown}</span>
-          </div>
-          {renderTrendLineChart(market.options)}
-          {renderIpCoinPanel()}
-
-          <h3 className="detail-subtitle">{t.market.orderOptions}</h3>
-          <div className="market-option-list detail-options">
-            {market.options.map((option, index) => {
-              const percent = optionPercents[index] ?? 10;
-              return (
-                <article key={option}>
-                  <div>
-                    <strong>{option}</strong>
-                    <span>{t.theater.predictionShare} {percent}%</span>
-                  </div>
-                  <button className="pink-btn" type="button" onClick={() => setBuyOption(option)}>
-                    {t.theater.buy}
-                  </button>
-                </article>
-              );
-            })}
+          <div className="detail-main-tabs" aria-label={t.market.detailTitle}>
+            <button className={detailTab === "ip" ? "active" : ""} type="button" onClick={() => setDetailTab("ip")}>
+              {t.market.ipCoinTab}
+            </button>
+            <button className={detailTab === "prediction" ? "active" : ""} type="button" onClick={() => setDetailTab("prediction")}>
+              {t.market.predictionMarketTab}
+            </button>
           </div>
 
-          <div className="info-tabs">
-            <button className={infoTab === "rules" ? "active" : ""} type="button" onClick={() => setInfoTab("rules")}>
-              {t.market.rules}
-            </button>
-            <button className={infoTab === "background" ? "active" : ""} type="button" onClick={() => setInfoTab("background")}>
-              {t.market.background}
-            </button>
-          </div>
-          <section className="rule-copy">
-            <p>{infoTab === "rules" ? t.market.rulesText : t.market.backgroundText}</p>
-          </section>
+          {detailTab === "ip" ? renderIpCoinPanel() : (
+            <section className="detail-tab-panel prediction-detail-panel">
+              <div className="market-chart-head">
+                <strong>{t.market.liveTrend}</strong>
+                <span>{t.market.deadline} {demoPhase.countdown}</span>
+              </div>
+              {renderTrendLineChart(market.options)}
 
-          <div className="info-tabs bottom-tabs">
-            <button className={activityTab === "comments" ? "active" : ""} type="button" onClick={() => setActivityTab("comments")}>
-              {t.market.comments}
-            </button>
-            <button className={activityTab === "positions" ? "active" : ""} type="button" onClick={() => setActivityTab("positions")}>
-              {t.market.positions}
-            </button>
-            <button className={activityTab === "dynamics" ? "active" : ""} type="button" onClick={() => setActivityTab("dynamics")}>
-              {t.market.dynamics}
-            </button>
-          </div>
-          {renderActivity()}
+              <h3 className="detail-subtitle">{t.market.orderOptions}</h3>
+              <div className="market-option-list detail-options">
+                {market.options.map((option, index) => {
+                  const percent = optionPercents[index] ?? 10;
+                  return (
+                    <article key={option}>
+                      <div>
+                        <strong>{option}</strong>
+                        <span>{t.theater.predictionShare} {percent}%</span>
+                      </div>
+                      <button className="pink-btn" type="button" onClick={() => setBuyOption(option)}>
+                        {t.theater.buy}
+                      </button>
+                    </article>
+                  );
+                })}
+              </div>
+
+              <div className="info-tabs">
+                <button className={infoTab === "rules" ? "active" : ""} type="button" onClick={() => setInfoTab("rules")}>
+                  {t.market.rules}
+                </button>
+                <button className={infoTab === "background" ? "active" : ""} type="button" onClick={() => setInfoTab("background")}>
+                  {t.market.background}
+                </button>
+              </div>
+              <section className="rule-copy">
+                <p>{infoTab === "rules" ? t.market.rulesText : t.market.backgroundText}</p>
+              </section>
+
+              <div className="info-tabs bottom-tabs">
+                <button className={activityTab === "comments" ? "active" : ""} type="button" onClick={() => setActivityTab("comments")}>
+                  {t.market.comments}
+                </button>
+                <button className={activityTab === "positions" ? "active" : ""} type="button" onClick={() => setActivityTab("positions")}>
+                  {t.market.positions}
+                </button>
+                <button className={activityTab === "dynamics" ? "active" : ""} type="button" onClick={() => setActivityTab("dynamics")}>
+                  {t.market.dynamics}
+                </button>
+              </div>
+              {renderActivity()}
+            </section>
+          )}
         </section>
 
         {buyOption ? (
@@ -446,7 +460,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
             const index = dramas.findIndex((item) => item.id === drama.id);
             return (
               <article className="prediction-card" key={drama.id}>
-                <button className="prediction-card-main" type="button" onClick={() => openMarket(index)}>
+                <button className="prediction-card-main" type="button" onClick={() => openMarket(index, "prediction")}>
                   <div className="prediction-poster" style={{ "--poster": `url(${drama.poster})` } as React.CSSProperties} />
                   <div>
                     <h3>{drama.cardTitle}</h3>
@@ -490,7 +504,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
             const index = dramas.findIndex((item) => item.id === drama.id);
             return (
               <article className="ip-market-row" key={`${drama.id}-ip`}>
-                <button className="ip-market-main" type="button" onClick={() => openMarket(index)}>
+                <button className="ip-market-main" type="button" onClick={() => openMarket(index, "ip")}>
                   <div className="ip-token-mark" style={{ "--poster": `url(${drama.poster})` } as React.CSSProperties}>
                     <span>{drama.ipCoin.symbol.slice(0, 2)}</span>
                   </div>
