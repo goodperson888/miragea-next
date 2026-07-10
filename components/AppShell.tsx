@@ -13,7 +13,6 @@ export function AppShell() {
   const [tab, setTab] = useState<TabKey>("theater");
   const [contentType, setContentType] = useState<ContentType>("growth");
   const [locale, setLocale] = useState<Locale>("zh");
-  const [phaseIndex, setPhaseIndex] = useState(0);
   const [walletAddress, setWalletAddress] = useState("");
   const [chainId, setChainId] = useState("");
   const [sheet, setSheet] = useState<"risk" | "comments" | null>(null);
@@ -24,7 +23,7 @@ export function AppShell() {
   ]);
   const [toast, setToast] = useState("");
   const t = dictionaries[locale];
-  const demoPhase = demoPhases[phaseIndex];
+  const demoPhase = demoPhases[0];
 
   useEffect(() => {
     document.documentElement.lang = "zh-CN";
@@ -188,17 +187,6 @@ export function AppShell() {
       )}
       {tab === "messages" && <MessagesView t={t} />}
       {tab === "profile" && <ProfileView t={t} notify={notify} />}
-
-      <button
-        className="demo-cycle"
-        type="button"
-        onClick={() => setPhaseIndex((value) => (value + 1) % demoPhases.length)}
-      >
-        <span>{t.demoCycle.title}</span>
-        <strong>{demoPhase.code}</strong>
-        <small>{t.demoCycle.phases[demoPhase.id]}</small>
-        <b>{t.demoCycle.next}</b>
-      </button>
 
       <nav className="bottom-nav" aria-label={t.navAria}>
         {(Object.keys(navCopy) as TabKey[]).map((item) => {

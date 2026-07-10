@@ -804,7 +804,7 @@ h1 {
 
 .finished-episode .side-actions {
   right: 14px;
-  top: 326px;
+  top: 190px;
   z-index: 8;
   gap: 14px;
   color: rgba(255, 236, 246, 0.9);
@@ -3650,78 +3650,6 @@ h1 {
   border-radius: 13px 13px 0 0;
   background: rgba(6, 6, 10, 0.95);
   backdrop-filter: blur(18px);
-}
-
-.demo-cycle {
-  position: fixed;
-  right: 14px;
-  bottom: calc(78px + env(safe-area-inset-bottom));
-  left: 14px;
-  z-index: 34;
-  display: grid;
-  grid-template-columns: auto auto 1fr auto;
-  gap: 10px;
-  align-items: center;
-  width: min(calc(100vw - 28px), calc(390px - 28px));
-  min-height: 44px;
-  margin: 0 auto;
-  padding: 8px 10px;
-  border: 1px solid rgba(13, 231, 243, 0.35);
-  border-radius: 12px;
-  background: rgba(9, 9, 15, 0.88);
-  color: var(--soft);
-  text-align: left;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 0 24px rgba(13, 231, 243, 0.12);
-}
-
-.tab-theater .demo-cycle {
-  display: none;
-  right: auto;
-  bottom: calc(82px + env(safe-area-inset-bottom));
-  left: min(calc(100vw - 18px), calc(50% + 197px));
-  grid-template-columns: auto auto;
-  width: auto;
-  min-width: 0;
-  min-height: 34px;
-  padding: 6px 9px;
-  border-radius: 999px;
-  transform: translateX(-100%);
-}
-
-.tab-theater .demo-cycle span,
-.tab-theater .demo-cycle small {
-  display: none;
-}
-
-.tab-theater .demo-cycle strong,
-.tab-theater .demo-cycle b {
-  font-size: 11px;
-}
-
-.demo-cycle span {
-  color: var(--cyan);
-  font-size: 11px;
-  font-weight: 950;
-}
-
-.demo-cycle strong {
-  color: #fff;
-  font-size: 13px;
-}
-
-.demo-cycle small {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--muted);
-  font-size: 11px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.demo-cycle b {
-  color: var(--pink);
-  font-size: 12px;
 }
 
 .nav-item {
