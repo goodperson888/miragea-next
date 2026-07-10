@@ -2770,7 +2770,7 @@ h1 {
   right: 0;
   bottom: var(--bottom-nav-height);
   left: 0;
-  z-index: 45;
+  z-index: 58;
   display: grid;
   width: var(--app-width);
   gap: 12px;
@@ -2783,8 +2783,13 @@ h1 {
   box-shadow: 0 -24px 70px rgba(0, 0, 0, 0.5), var(--shadow);
 }
 
-.trade-backdrop {
-  z-index: 44;
+.trade-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 57;
+  display: block;
+  width: var(--app-width);
+  margin: 0 auto;
   background: rgba(0, 0, 0, 0.5);
 }
 

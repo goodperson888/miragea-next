@@ -53,6 +53,7 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
   function closeMarket() {
     setSelectedMarket(null);
     setBuyOption("");
+    setTradeAmount("");
   }
 
   function toggleFavorite(id: string) {
@@ -417,12 +418,12 @@ export function MarketView({ notify, goTheater, openComments, commentsCount, com
         {buyOption ? (
           <>
             <button
-              className="sheet-backdrop open trade-backdrop"
+              className="trade-sheet-backdrop"
               type="button"
               aria-label={t.closeSheet}
               onClick={() => setBuyOption("")}
             />
-            <section className="trade-sheet" aria-label={t.market.buyTitle}>
+            <section className="trade-sheet" aria-label={t.market.buyTitle} onClick={(event) => event.stopPropagation()}>
               <button className="sheet-close mini-close" type="button" onClick={() => setBuyOption("")} aria-label={t.closeSheet}>
                 ×
               </button>
